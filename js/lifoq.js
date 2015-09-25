@@ -1,7 +1,8 @@
 var engine;
 var gui;
 var params;
-var TIMESTEP = 1000.0 / 60.0; 
+var TIMESTEP = 1000.0 / 60.0;
+var agents = [];
 
 function init() {
   // Matter.js module aliases
@@ -11,14 +12,16 @@ function init() {
 
   // create a Matter.js engine
   engine = Engine.create(document.body);
+  engine.world.gravity.y = 0;
 
-  // create two boxes and a ground
-  var boxA = Bodies.rectangle(400, 200, 80, 80);
-  var boxB = Bodies.rectangle(450, 50, 80, 80);
-  var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+  var agentWorld = {engine: engine};
 
-  // add all of the bodies to the world
-  World.add(engine.world, [boxA, boxB, ground]);
+  // create some agents
+  for(var i = 0; i < 10; ++i) {
+    var x = Math.random() * 800;
+    var y = Math.random() * 600;
+    agents.push(new Agent({x: x, y: y}, agentWorld));
+  }
 
   // attach callback
   Matter.Events.on(engine, "beforeTick",  beforePhysicsTick) 
@@ -40,9 +43,11 @@ function init() {
 
 function beforePhysicsTick() {
   //console.log("BTICK");
+  for(var i = 0; i < agents.length; ++i) {
+    agents[i].update();
+  }
 }
 
 $(function(){
   init();
-
 });

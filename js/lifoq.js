@@ -3,6 +3,7 @@ var gui;
 var params;
 var TIMESTEP = 1000.0 / 60.0;
 var agents = [];
+var agentWorld = {};
 
 function init() {
   // Matter.js module aliases
@@ -14,10 +15,11 @@ function init() {
   engine = Engine.create(document.body);
   engine.world.gravity.y = 0;
 
-  var agentWorld = {engine: engine};
+  agentWorld.engine = engine;
+  agentWorld.bodies = [];
 
   // create some agents
-  for(var i = 0; i < 10; ++i) {
+  for(var i = 0; i < 30; ++i) {
     var x = Math.random() * 800;
     var y = Math.random() * 600;
     agents.push(new Agent({x: x, y: y}, agentWorld));
@@ -42,7 +44,11 @@ function init() {
 }
 
 function beforePhysicsTick() {
-  //console.log("BTICK");
+  agentWorld.bodies = [];
+  for(var i = 0; i < agents.length; ++i) {
+    agentWorld.bodies.push(agents[i].body)
+  }
+
   for(var i = 0; i < agents.length; ++i) {
     agents[i].update();
   }

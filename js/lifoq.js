@@ -20,7 +20,7 @@ function init() {
 
   agentWorld.engine = engine;
   agentWorld.bodies = [];
-  agentWorld.isLIFO = false;
+  agentWorld.isLIFO = true;
   agentWorld.serviceTime = 3.0;
   agentWorld.spawnTime = 2.0;
   agentWorld.spawnVariance = 2.0;
@@ -53,8 +53,7 @@ function pruneAgents() {
 
   for(var i = 0; i < agents.length; ++i) {
     var pos = agents[i].body.position;
-    var ll = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
-    if(pos.x < -100 || pos.y > 600) {
+    if(pos.x < -100 || pos.y > 600 || pos.x > 800 || pos.x < -100) {
       console.log("Removing agent!");
       q.leave(agents[i]); // just to be safe
       Matter.World.remove(engine.world, agents[i].body);
@@ -77,7 +76,7 @@ function spawnAgent() {
 }
 
 function spawnAgents() {
-  if(agents.length >= 30) {
+  if(agents.length >= 20) {
     return;
   }
 

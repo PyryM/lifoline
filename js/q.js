@@ -1,7 +1,7 @@
 function AgentQueue(options, world) {
   this.world = world;
   this.options = {
-    spacing: 50,
+    spacing: 40,
     x0: 100,
     y0: 300,
   }

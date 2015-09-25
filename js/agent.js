@@ -10,7 +10,8 @@ function Agent(options, world) {
     lookWidth: 30,
     frustrationTime: 20.0,
     cheatyness: 0.5,
-    reenterPause: 5.0
+    reenterPause: 5.0,
+    reactionTime: 0.2
   }
   $.extend(this.options, options);
 
@@ -25,6 +26,10 @@ function Agent(options, world) {
   this.queuePosition = 0;
   this.waitTime = 0.0;
 
+  this.freezeTime = 0.0;
+
+  this.errorFrames = 0;
+
   this.createBody();
 }
 
@@ -34,6 +39,7 @@ Agent.prototype.createBody = function() {
                                {density: this.options.density});
   this.body.frictionAir = this.options.damping;
   Matter.World.add(this.engine.world, [this.body]);
+  console.log("created body?");
 }
 
 Agent.prototype.checkFront = function(fpos) {
@@ -99,10 +105,26 @@ Agent.prototype.updateAI = function(dt) {
     this.avoidingCollisions = true;
   }
 
+  if(this.targetDist > this.options.rad * 3.0) {
+    this.errorFrames += 1;
+  } else {
+    this.errorFrames = 0;
+  }
+
+  if(this.errorFrames > 300) {
+    this.avoidingCollisions = false;
+  }
+
   var forwardVec = Matter.Vector.mult(dv, this.options.forwardLook);
   var fpos = Matter.Vector.add(this.body.position, forwardVec);
 
-  this.blocked = this.checkFront(fpos);
+  var frontblocked = this.checkFront(fpos);
+  if(frontblocked) {
+    this.freezeTime = this.options.reactionTime;
+  }
+
+  this.blocked = frontblocked || (this.freezeTime > 0.0);
+  this.freezeTime -= (dt / 1000.0);
   this.targetVec = dv;
 };
 

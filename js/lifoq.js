@@ -1,4 +1,7 @@
 var engine;
+var gui;
+var params;
+var TIMESTEP = 1000.0 / 60.0; 
 
 function init() {
   // Matter.js module aliases
@@ -17,10 +20,29 @@ function init() {
   // add all of the bodies to the world
   World.add(engine.world, [boxA, boxB, ground]);
 
+  // attach callback
+  Matter.Events.on(engine, "beforeTick",  beforePhysicsTick) 
+
   // run the engine
   Engine.run(engine);
+
+  // create params
+  params = {
+    arrivalRate: 0.1,
+    serviceRate: 0.1
+  }
+
+  // create gui
+  gui = new dat.GUI();
+  gui.add(params, 'arrivalRate', 0, 1.5);
+  gui.add(params, 'serviceRate', 0, 1.5);
+}
+
+function beforePhysicsTick() {
+  //console.log("BTICK");
 }
 
 $(function(){
   init();
+
 });

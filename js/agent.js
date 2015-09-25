@@ -1,8 +1,8 @@
 function Agent(options, world) {
   this.options = {
-    force: 0.5,
+    force: 1.0,
     density: 1.0,
-    damping: 0.05,
+    damping: 0.15,
     x: 0,
     y: 0,
     rad: 15,
@@ -89,6 +89,7 @@ Agent.prototype.updateAI = function(dt) {
   }
 
   var dv = Matter.Vector.sub(this.target, this.body.position);
+  this.targetDist = Math.sqrt(dv.x*dv.x + dv.y*dv.y);
   dv = Matter.Vector.normalise(dv);
 
   var forwardVec = Matter.Vector.mult(dv, this.options.forwardLook);
@@ -99,7 +100,8 @@ Agent.prototype.updateAI = function(dt) {
 };
 
 Agent.prototype.updatePhysics = function(dt) {
-  var dv = Matter.Vector.mult(this.targetVec, this.options.force);
+  var f = Math.min(this.targetDist * 0.01, this.options.force);
+  var dv = Matter.Vector.mult(this.targetVec, f);
 
   // don't apply force if we see something in front of us
   if( !(this.blocked) || !(this.avoidingCollisions) ){

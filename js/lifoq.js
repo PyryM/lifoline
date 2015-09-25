@@ -51,8 +51,26 @@ function init() {
   gui.add(params, 'serviceRate', 0, 1.5);
 }
 
+function pruneAgents() {
+  var newagents = [];
+
+  for(var i = 0; i < agents.length; ++i) {
+    var pos = agents[i].body.position;
+    var ll = Math.sqrt(pos.x * pos.x + pos.y * pos.y);
+    if(pos.x < -100 || pos.y > 600) {
+      console.log("Removing agent!");
+      q.leave(agents[i]); // just to be safe
+      Matter.World.remove(engine.world, agents[i].body);
+    } else {
+      newagents.push(agents[i]);
+    }
+  }
+  agents = newagents;
+}
+
 function beforePhysicsTick() {
   q.update(TIMESTEP);
+  pruneAgents();
 
   agentWorld.bodies = [];
   for(var i = 0; i < agents.length; ++i) {

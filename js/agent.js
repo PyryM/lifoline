@@ -6,8 +6,8 @@ function Agent(options, world) {
     x: 0,
     y: 0,
     rad: 15,
-    forwardLook: 40,
-    lookWidth: 40,
+    forwardLook: 30,
+    lookWidth: 30,
     frustrationTime: 20.0,
     cheatyness: 0.5,
     reenterPause: 5.0
@@ -43,6 +43,7 @@ Agent.prototype.checkFront = function(fpos) {
 };
 
 Agent.prototype.goToBack = function() {
+  console.log("Agent trying to cheat by going to back of line.");
   this.waitTime = 0.0;
   this.world.q.leave(this);
   this.target = this.world.q.getReenterTarget();
@@ -50,6 +51,7 @@ Agent.prototype.goToBack = function() {
 };
 
 Agent.prototype.giveUp = function() {
+  console.log("Agent leaving.");
   this.world.q.leave(this);
   this.target = this.world.q.getExitTarget();
 };
@@ -58,6 +60,7 @@ Agent.prototype.reenterQueue = function() {
   this.inQueue = true;
   this.reentering = false;
   this.world.q.enter(this);
+  this.waitTime = 0.0;
 };
 
 Agent.prototype.updateQueuePosition = function(targetpos, queuepos) {
@@ -91,6 +94,10 @@ Agent.prototype.updateAI = function(dt) {
   var dv = Matter.Vector.sub(this.target, this.body.position);
   this.targetDist = Math.sqrt(dv.x*dv.x + dv.y*dv.y);
   dv = Matter.Vector.normalise(dv);
+
+  if(this.inQueue && this.targetDist < this.options.rad) {
+    this.avoidingCollisions = true;
+  }
 
   var forwardVec = Matter.Vector.mult(dv, this.options.forwardLook);
   var fpos = Matter.Vector.add(this.body.position, forwardVec);

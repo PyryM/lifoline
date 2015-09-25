@@ -1,7 +1,7 @@
 function AgentQueue(options, world) {
   this.world = world;
   this.options = {
-    spacing: 40,
+    spacing: 50,
     x0: 100,
     y0: 300,
   }
@@ -22,7 +22,7 @@ AgentQueue.prototype.createTargets = function() {
     this.qpos.push({x: x0 + i*dx, y: y0});
   }
 
-  this.waitZone = {x: 0, y: 0, w: 800, h: 200};
+  this.waitZone = {x: 100, y: 300, w: 400, h: 200};
 
   this.exitTarget = {x: 400, y: 5000};
 
@@ -61,7 +61,7 @@ AgentQueue.prototype.leave = function(agent) {
 };
 
 AgentQueue.prototype.serviceAgent = function() {
-  console.log("Servicing an agent...");
+  //console.log("Servicing an agent...");
 
   if(this.queue.length == 0) {
     return;

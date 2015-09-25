@@ -5,6 +5,8 @@ var TIMESTEP = 1000.0 / 60.0;
 var agents = [];
 var agentWorld = {};
 var q;
+var stime = 0;
+var nextSpawnTime = 0;
 
 function init() {
   // Matter.js module aliases
@@ -19,19 +21,14 @@ function init() {
   agentWorld.engine = engine;
   agentWorld.bodies = [];
   agentWorld.isLIFO = false;
-  agentWorld.serviceTime = 10.0;
+  agentWorld.serviceTime = 3.0;
+  agentWorld.spawnTime = 2.0;
+  agentWorld.spawnVariance = 2.0;
+  agentWorld.frusTime = 100.0;
+  agentWorld.frusVariance = 5.0;
 
   q = new AgentQueue({}, agentWorld);
   agentWorld.q = q;
-
-  // create some agents
-  for(var i = 0; i < 10; ++i) {
-    var x = Math.random() * 800;
-    var y = Math.random() * 600;
-    var newagent = new Agent({x: x, y: y}, agentWorld);
-    agents.push(newagent);
-    q.enter(newagent);
-  }
 
   // attach callback
   Matter.Events.on(engine, "beforeTick",  beforePhysicsTick) 
@@ -68,8 +65,35 @@ function pruneAgents() {
   agents = newagents;
 }
 
+function spawnAgent() {
+  var x = Math.random() * 800;
+  var y = Math.random() * 200;
+
+  var ftime = agentWorld.frusTime + (Math.random()*2.0 - 1.0)*agentWorld.frusVariance;
+
+  var newagent = new Agent({x: x, y: y, frustrationTime: ftime}, agentWorld);
+  agents.push(newagent);
+  q.enter(newagent);
+}
+
+function spawnAgents() {
+  if(agents.length >= 30) {
+    return;
+  }
+
+  stime = stime + (TIMESTEP / 1000.0);
+
+  if(stime > nextSpawnTime) {
+    //console.log("Spawning an agent...");
+    spawnAgent();
+    stime = 0.0;
+    nextSpawnTime = agentWorld.spawnTime + (Math.random()*2.0 - 1.0)*agentWorld.spawnVariance;
+  }
+}
+
 function beforePhysicsTick() {
   q.update(TIMESTEP);
+  spawnAgents();
   pruneAgents();
 
   agentWorld.bodies = [];

@@ -1,6 +1,5 @@
 var engine;
 var gui;
-var params;
 var TIMESTEP = 1000.0 / 60.0;
 var agents = [];
 var agentWorld = {};
@@ -24,8 +23,9 @@ function init() {
   agentWorld.serviceTime = 3.0;
   agentWorld.spawnTime = 2.0;
   agentWorld.spawnVariance = 2.0;
-  agentWorld.frusTime = 100.0;
+  agentWorld.frusTime = 20.0;
   agentWorld.frusVariance = 5.0;
+  agentWorld.cheatyness = 0.5;
 
   q = new AgentQueue({}, agentWorld);
   agentWorld.q = q;
@@ -36,16 +36,15 @@ function init() {
   // run the engine
   Engine.run(engine);
 
-  // create params
-  params = {
-    arrivalRate: 0.1,
-    serviceRate: 0.1
-  }
-
   // create gui
   gui = new dat.GUI();
-  gui.add(params, 'arrivalRate', 0, 1.5);
-  gui.add(params, 'serviceRate', 0, 1.5);
+  gui.add(agentWorld, 'isLIFO');
+  gui.add(agentWorld, 'serviceTime', 0.1, 3.5);
+  gui.add(agentWorld, 'spawnTime', 0.1, 3.5);
+  gui.add(agentWorld, 'spawnVariance', 0, 3.5);
+  gui.add(agentWorld, 'frusTime', 0, 60.5);
+  gui.add(agentWorld, 'frusVariance', 0, 60.5);
+  gui.add(agentWorld, 'cheatyness', 0.01, 0.99);
 }
 
 function pruneAgents() {

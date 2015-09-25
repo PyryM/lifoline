@@ -9,7 +9,6 @@ function Agent(options, world) {
     forwardLook: 30,
     lookWidth: 30,
     frustrationTime: 20.0,
-    cheatyness: 0.5,
     reenterPause: 5.0,
     reactionTime: 0.2
   }
@@ -84,7 +83,7 @@ Agent.prototype.updateAI = function(dt) {
 
     if(this.waitTime > this.options.frustrationTime) {
       this.inQueue = false;
-      if(Math.random() < this.options.cheatyness) {
+      if(Math.random() < this.world.cheatyness) {
         this.goToBack();
       } else {
         this.giveUp();

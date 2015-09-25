@@ -4,6 +4,7 @@ var params;
 var TIMESTEP = 1000.0 / 60.0;
 var agents = [];
 var agentWorld = {};
+var q;
 
 function init() {
   // Matter.js module aliases
@@ -17,12 +18,19 @@ function init() {
 
   agentWorld.engine = engine;
   agentWorld.bodies = [];
+  agentWorld.isLIFO = false;
+  agentWorld.serviceTime = 10.0;
+
+  q = new AgentQueue({}, agentWorld);
+  agentWorld.q = q;
 
   // create some agents
-  for(var i = 0; i < 30; ++i) {
+  for(var i = 0; i < 10; ++i) {
     var x = Math.random() * 800;
     var y = Math.random() * 600;
-    agents.push(new Agent({x: x, y: y}, agentWorld));
+    var newagent = new Agent({x: x, y: y}, agentWorld);
+    agents.push(newagent);
+    q.enter(newagent);
   }
 
   // attach callback
@@ -44,13 +52,15 @@ function init() {
 }
 
 function beforePhysicsTick() {
+  q.update(TIMESTEP);
+
   agentWorld.bodies = [];
   for(var i = 0; i < agents.length; ++i) {
     agentWorld.bodies.push(agents[i].body)
   }
 
   for(var i = 0; i < agents.length; ++i) {
-    agents[i].update();
+    agents[i].update(TIMESTEP);
   }
 }
 
